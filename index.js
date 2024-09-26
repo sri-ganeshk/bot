@@ -1,10 +1,10 @@
 const express = require('express');
-const chromium = require('chrome-aws-lambda');
-const puppeteer = require('puppeteer-core');
+const puppeteer = require('puppeteer');
 
 const app = express();
 const PORT = 3000;
 
+// API endpoint to handle login and scraping
 app.get('/getAttendance', async (req, res) => {
   const { id, password } = req.query;
 
@@ -13,14 +13,8 @@ app.get('/getAttendance', async (req, res) => {
   }
 
   try {
-    // Launch the browser with chrome-aws-lambda
-    const browser = await puppeteer.launch({
-      args: chromium.args,
-      executablePath: await chromium.executablePath,
-      headless: true,
-      ignoreHTTPSErrors: true,
-    });
-
+    // Launch browser
+    const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
 
     // Navigate to login page
@@ -88,4 +82,3 @@ app.get('/getAttendance', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
