@@ -2,6 +2,7 @@
   "name": "bot",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,6 +17,7 @@
     "argparse": "^2.0.1",
     "array-flatten": "^1.1.1",
     "ast-types": "^0.13.4",
+    "axios": "^1.7.7",
     "b4a": "^1.6.7",
     "bare-events": "^2.5.0",
     "bare-fs": "^2.3.5",
@@ -111,6 +113,7 @@
     "ms": "^2.0.0",
     "negotiator": "^0.6.3",
     "netmask": "^2.0.2",
+    "node-telegram-bot-api": "^0.66.0",
     "object-inspect": "^1.13.2",
     "on-finished": "^2.4.1",
     "once": "^1.4.0",
