@@ -26,7 +26,7 @@ bot.onText(/\/get (.+)/, (msg, match) => {
     }
 
     // Make a request to the Flask API with student ID and password
-    axios.get('http://localhost:5000/attendance', {
+    axios.get('http://localhost:3000/attendance', {
         params: {
             student_id: studentId,
             password: password
