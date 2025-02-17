@@ -21,7 +21,6 @@ const buildAttendanceMessage = (data, updateTime = null) => {
     message += `\nYou can skip ${totalInfo.hours_can_skip} hours and still maintain above 75%.`;
   }
 
-
   if (attendanceSummary.length > 0 && attendanceSummary[0].subject) {
     message += `\n\nToday's Attendance:\n`;
     attendanceSummary.forEach(attendance => {
@@ -37,11 +36,6 @@ const buildAttendanceMessage = (data, updateTime = null) => {
     message += `${subject.subject_name}: ${subject.attended_held} (${subject.percentage}%)\n`;
   });
 
- 
-
-  
-
-  
   if (updateTime) {
     message += `\n\nLast Updated: ${updateTime}`;
   }
@@ -64,7 +58,8 @@ const updateAttendance = (chatId, messageId, studentId, password) => {
         return;
       }
 
-      const currentTime = new Date().toLocaleString();
+      // Get the current time in Indian Standard Time (IST)
+      const currentTime = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
       const message = buildAttendanceMessage(data, currentTime);
       // Re-attach the inline keyboard button for further updates
       bot
