@@ -2,25 +2,28 @@ import TelegramBot from 'node-telegram-bot-api';
 import axios from 'axios';
 
 // Replace with your bot token
-const bot = new TelegramBot('YOUR_BOT_TOKEN_HERE', { polling: true });
+const bot = new TelegramBot('7851794722:AAG6Rh02bsUla1wmZBOZpRyeBSXzAJPvAys', { polling: true });
 
 // Helper function to build the attendance message text
-const buildAttendanceMessage = (data) => {
+const buildAttendanceMessage = (data, updateTime = null) => {
   const rollNumber = data.roll_number;
   const totalInfo = data.total_info;
   const subjectwiseSummary = data.subjectwise_summary;
   const attendanceSummary = data.attendance_summary;
 
-  let message = `Hi, Roll Number: ${rollNumber}\n\nSubject-wise Attendance:\n`;
+  let message = `Hi, Roll Number: ${rollNumber}\n`;
 
-  subjectwiseSummary.forEach(subject => {
-    message += `${subject.subject_name}: ${subject.attended_held} (${subject.percentage}%)\n`;
-  });
+  message += `Total: ${totalInfo.total_attended}/${totalInfo.total_held} (${totalInfo.total_percentage}%)\n`;
 
-  message += `\nTotal: ${totalInfo.total_attended}/${totalInfo.total_held} (${totalInfo.total_percentage}%)\n`;
+  if (totalInfo.total_percentage < 75) {
+    message += `\nYou need to attend ${totalInfo.additional_hours_needed} more hours to reach 75%.`;
+  } else {
+    message += `\nYou can skip ${totalInfo.hours_can_skip} hours and still maintain above 75%.`;
+  }
+
 
   if (attendanceSummary.length > 0 && attendanceSummary[0].subject) {
-    message += `\nToday's Attendance:\n`;
+    message += `\n\nToday's Attendance:\n`;
     attendanceSummary.forEach(attendance => {
       message += `${attendance.subject}: ${attendance.attendance_today}\n`;
     });
@@ -28,10 +31,19 @@ const buildAttendanceMessage = (data) => {
     message += `\n${attendanceSummary[0].message}\n`;
   }
 
-  if (totalInfo.total_percentage < 75) {
-    message += `\nYou need to attend ${totalInfo.additional_hours_needed} more hours to reach 75%.`;
-  } else {
-    message += `\nYou can skip ${totalInfo.hours_can_skip} hours and still maintain above 75%.`;
+  message += `\nSubject-wise Attendance:\n`;
+
+  subjectwiseSummary.forEach(subject => {
+    message += `${subject.subject_name}: ${subject.attended_held} (${subject.percentage}%)\n`;
+  });
+
+ 
+
+  
+
+  
+  if (updateTime) {
+    message += `\n\nLast Updated: ${updateTime}`;
   }
 
   return message;
@@ -52,7 +64,8 @@ const updateAttendance = (chatId, messageId, studentId, password) => {
         return;
       }
 
-      const message = buildAttendanceMessage(data);
+      const currentTime = new Date().toLocaleString();
+      const message = buildAttendanceMessage(data, currentTime);
       // Re-attach the inline keyboard button for further updates
       bot
         .editMessageText(message, {
@@ -78,7 +91,6 @@ const updateAttendance = (chatId, messageId, studentId, password) => {
             err.response.body.description &&
             err.response.body.description.includes('message is not modified')
           ) {
-            // Do nothing since the message hasn't changed
             return;
           }
           console.error(err);
